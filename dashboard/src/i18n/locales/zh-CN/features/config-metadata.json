@@ -707,7 +707,7 @@
         },
         "id_whitelist": {
           "description": "白名单 ID 列表",
-          "hint": "使用 /sid 获取 ID。列表为空时表示该白名单不启用（即所有 ID 都在白名单内）。"
+          "hint": "使用 /sid 获取 ID。列表为空时将拦截所有消息。"
         },
         "id_whitelist_log": {
           "description": "输出日志",

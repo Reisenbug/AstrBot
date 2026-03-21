@@ -705,7 +705,7 @@
         },
         "id_whitelist": {
           "description": "Whitelist ID List",
-          "hint": "Use /sid to get IDs. If the list is empty, it means whitelist is disabled (all IDs are in the whitelist)."
+          "hint": "Use /sid to get IDs. If the list is empty, all messages will be blocked."
         },
         "id_whitelist_log": {
           "description": "Output Logs",
