@@ -166,6 +166,7 @@ class LongTermMemory:
         chats_str = "\n---\n".join(self.session_chats[event.unified_msg_origin])
 
         cfg = self.cfg(event)
+        unique_session = cfg.get("platform_settings", {}).get("unique_session", False)
         if cfg["enable_active_reply"]:
             prompt = req.prompt
             req.prompt = (
@@ -173,7 +174,8 @@ class LongTermMemory:
                 f"\nNow, a new message is coming: `{prompt}`. "
                 f"{cfg['active_reply_suffix_prompt']}"
             )
-            req.contexts = []  # 清空上下文，当使用了主动回复，所有聊天记录都在一个prompt中。
+            if not unique_session:
+                req.contexts = []  # 清空上下文，当使用了主动回复，所有聊天记录都在一个prompt中。
         else:
             req.system_prompt += cfg["context_prompt"]
             req.system_prompt += chats_str
