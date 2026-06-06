@@ -70,6 +70,11 @@ class RateLimitStage(Stage):
                     break
                 next_window_time = timestamps[0] + self.rate_limit_time
                 stall_duration = (next_window_time - now).total_seconds() + 0.3
+                # stall 时长物理上不可能超过一个窗口，超出说明系统时钟发生了
+                # 跳变（休眠/唤醒、NTP 回拨），夹住以免会话被冻死数小时。
+                stall_duration = min(
+                    stall_duration, self.rate_limit_time.total_seconds() + 0.3
+                )
 
                 match self.rl_strategy:
                     case RateLimitStrategy.STALL.value:
@@ -99,3 +104,8 @@ class RateLimitStage(Stage):
         expiry_threshold: datetime = now - self.rate_limit_time
         while timestamps and timestamps[0] < expiry_threshold:
             timestamps.popleft()
+        # 丢弃晚于当前时间的时间戳：一个请求不可能发生在未来，出现即
+        # 说明系统时钟被回拨（休眠/唤醒、NTP），属污染数据，需清除。
+        future = [ts for ts in timestamps if ts > now]
+        for ts in future:
+            timestamps.remove(ts)
